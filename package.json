@@ -30,8 +30,7 @@
   },
   "license": "CC-BY-NC-SA-4.0",
   "scripts": {
-    "build": "tsc -p tsconfig.json && node lib/move.js",
-    "commit": "gitmoji-cli -c"
+    "build": "tsc -p tsconfig.json && node lib/move.js"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
