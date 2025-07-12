@@ -1,0 +1,7 @@
+.idx/
+.vscode/
+examples/
+src/
+.gitignore
+tsconfig.json
+pnpm-lock.yaml
