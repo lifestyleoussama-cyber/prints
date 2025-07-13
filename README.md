@@ -13,6 +13,7 @@ Design Pinterest-style music posters powered by <b>Spotify</b> and <b>LRClib</b>
     <img alt="License" src="https://img.shields.io/badge/License-CC_BY--NC--SA_4.0-%23c4b9a6?style=for-the-badge&logo=Pinboard&logoColor=%23b5a790&labelColor=%23312123">
   </a>
   <img alt="Built with TypeScript" src="https://img.shields.io/badge/TypeScript-%E2%9C%A8-c4b9a6?style=for-the-badge&logo=TypeScript&logoColor=%23b5a790&labelColor=%23312123">
+  <img alt="Latest NPM version" src="https://img.shields.io/npm/v/beatprints.js.svg?style=for-the-badge&logo=npm&logoColor=%23b5a790&labelColor=%23312123&color=c4b9a6">
   <img alt="Spotify API" src="https://img.shields.io/badge/Spotify_API-integrated-c4b9a6.svg?style=for-the-badge&logo=Spotify&logoColor=%23b5a790&labelColor=%23312123">
 </p>
 
@@ -34,9 +35,9 @@ BeatPrints.js is a visual utility to generate music posters from your favorite t
 ## 📦 Installation
 
 ```bash
-pnpm add beatprintsjs
+pnpm add beatprints.js
 # or
-npm install beatprintsjs
+npm install beatprints.js
 ```
 
 ---
@@ -76,9 +77,7 @@ const poster = new Poster({
 const search = await client.getTrack('love lost - boywithuke', 1);
 const lyrics = await lrc.getLyrics(search, true);
 
-const highLightedLyrics = await lrc.checkInstrumental(search) 
-    ? lyrics 
-    : lrc.selectLines(lyrics, '31-34');
+const highLightedLyrics = await lrc.selectLines(lyrics, '31-34');
 
 await poster.track(search, highLightedLyrics, { palette: true, accent: true });
 ```
