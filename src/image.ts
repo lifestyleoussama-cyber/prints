@@ -2,23 +2,34 @@ import { join } from 'node:path';
 import axios from 'axios';
 import sharp from 'sharp';
 import { Vibrant } from 'node-vibrant/node';
-import { Size, Position, Color, ThemesSelector, FilePath } from './constants.js';
+import { Size, Position, ThemesSelector, FilePath } from './constants.js';
 import type { RGB } from './write.js';
 import { pickRandom } from './utils.js';
-import { Jimp, JimpMime, ResizeStrategy, rgbaToInt } from 'jimp';
 import type { CanvasRenderingContext2D } from '@napi-rs/canvas';
 import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { Worker } from 'node:worker_threads';
+import { fileURLToPath } from 'node:url';
 
-export const TRANSPARENT = rgbaToInt(...Color.TRANSPARENT);
-export const WHITE = rgbaToInt(...Color.WHITE);
+const paletteCache = new Map<string, RGB[]>();
 
 export async function getPalette(image: Buffer): Promise<RGB[]> {
-    const palette = await Vibrant.from(image).maxColorCount(6).getPalette()
-    palette
+    const downSized = await sharp(image)
+        .resize(32, 32, { fit: 'inside', kernel: 'lanczos3' })
+        .toBuffer();
+
+    const hash = createHash('sha1').update(image).digest('hex');
+    if (paletteCache.has(hash)) return paletteCache.get(hash)!;
+
+    const palette = await Vibrant.from(downSized)
+        .maxColorCount(6)
+        .getPalette();
+
     const colors = Object.values(palette)
         .filter(swatch => swatch !== null)
         .map(swatch => swatch.rgb.map(c => Math.round(c)) as RGB);
 
+    paletteCache.set(hash, colors);
     return colors;
 }
 
@@ -33,7 +44,8 @@ export async function drawPalette(
     image: Buffer,
     accent: boolean = false
 ): Promise<void> {
-    const palette = await getPalette(image);
+    const thumb = await sharp(image).resize(32, 32, { fit: 'inside' }).toBuffer();
+    const palette = await getPalette(thumb);
 
     for (let i = 0; i < palette.length; i++) {
         const [r, g, b] = palette[i]!;
@@ -54,24 +66,20 @@ export async function drawPalette(
 
 /**
  * Crops the image buffer to a square aspect ratio.
- * @param {Buffer} image The image from which the crop will be applied.
+ * @param {Buffer} buffer The image from which the crop will be applied.
  * @returns {Promise<Buffer>} A new buffer containing the cropped square image.
  */
-export async function crop(image: Buffer): Promise<Buffer> {
-    const chop = async (buffer: Buffer): Promise<Buffer> => {
-        const image = sharp(buffer);
-        const metadata = await image.metadata();
+export async function crop(buffer: Buffer): Promise<Buffer> {
+    const image = sharp(buffer);
+    const metadata = await image.metadata();
 
-        const { width, height } = metadata;
-        const minSize = Math.min(width, height);
+    const { width, height } = metadata;
+    const minSize = Math.min(width, height);
 
-        const left = Math.floor((width - minSize) / 2);
-        const top = Math.floor((height - minSize) / 2);
+    const left = Math.floor((width - minSize) / 2);
+    const top = Math.floor((height - minSize) / 2);
 
-        return await image.extract({ left, top, width: minSize, height: minSize }).toBuffer();
-    }
-
-    return await chop(image);
+    return image.extract({ left, top, width: minSize, height: minSize }).toBuffer();
 }
 
 /**
@@ -80,17 +88,13 @@ export async function crop(image: Buffer): Promise<Buffer> {
  * - Brightness is reduced by 10% (i.e., 90% of original)
  * - Contrast is reduced by 20% (i.e., 80% of original)
  * 
- * @param image Buffer or Sharp instance of the image
- * @returns Promise<Buffer> The processed image buffer
+ * @param {Buffer} image Buffer or Sharp instance of the image
+ * @returns {Promise<Buffer>} The processed image buffer
  */
 export async function magicify(image: Buffer): Promise<Buffer> {
-    const img = sharp(image);
-
-    return await img
-        .modulate({
-            brightness: 0.9, // 90% of original brightness (-10%)
-        })
-        .linear(0.8, 0) // contrast: multiply by 0.8 (less contrast; -20%)
+    return sharp(image)
+        .modulate({ brightness: 0.9 })
+        .linear(0.8, 0)
         .toBuffer();
 }
 
@@ -110,30 +114,26 @@ export async function scannable(
     const scan_url = `https://scannables.scdn.co/uri/plain/png/101010/white/1280/spotify:${item}:${id}`;
 
     const data = (await axios.get(scan_url, { responseType: 'arraybuffer' })).data;
-    const img = await Jimp.read(data);
 
-    const { width, height } = img.bitmap;
+    const { data: raw, info } = await sharp(data)
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
 
-    for (let x = 0; x < width; x++) {
-        for (let y = 0; y < height; y++) {
-            const pixelColor = img.getPixelColor(x, y);
+    const newRaw = await replaceWhite(raw, variant);
 
-            if (pixelColor !== WHITE) {
-                img.setPixelColor(TRANSPARENT, x, y);
-            } else {
-                // @ts-ignore cry ts
-                img.setPixelColor(rgbaToInt(...variant), x, y);
-            }
+    const buffer = sharp(newRaw, {
+        raw: {
+            width: info.width,
+            height: info.height,
+            channels: 4
         }
-    }
-
-    img.resize({
-        mode: ResizeStrategy.BICUBIC,
-        w: Size.SCANCODE[0],
-        h: Size.SCANCODE[1]
-    });
-
-    return await img.getBuffer(JimpMime.png);
+    })
+    .resize(Size.SCANCODE[0], Size.SCANCODE[1], { kernel: 'cubic' })
+    .png()
+    .toBuffer();
+    
+    return buffer;
 }
 
 /**
@@ -158,9 +158,10 @@ export async function cover(url: string, source?: string | Buffer): Promise<Buff
         const res = await axios.get(url, { responseType: 'arraybuffer' });
         buffer = Buffer.from(res.data)
     }
+
     
     const cropped = await crop(buffer);
-    return await magicify(cropped);
+    return magicify(cropped);
 }
 
 /**
@@ -174,3 +175,21 @@ export function getTheme(theme: ThemesSelector.Options = 'Light'): [RGB, string]
 
     return [variant as unknown as RGB, template];
 }
+
+async function replaceWhite(raw: Buffer, variant: number[]): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+        const worker = new Worker(fileURLToPath(new URL('./threads/replaceWhite.js', import.meta.url)));
+
+        worker.on('message', (modified: ArrayBuffer) => {
+            resolve(Buffer.from(modified));
+        });
+
+        worker.on('error', reject);
+        worker.on('exit', code => {
+            if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
+        });
+
+        const array = new Uint8ClampedArray(raw);
+        worker.postMessage({ buffer: array.buffer, variant }, [array.buffer]);
+    })
+} 

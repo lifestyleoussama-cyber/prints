@@ -8,12 +8,12 @@ import {
     LineLimitExceededError
 } from './errors.js';
 
-import { Instrumental } from './constants.js';
-
 /**
  * A class for interacting with the LRClib API to fetch and manage song lyrics.
  */
 export class Lyrics {
+    // @ts-ignore
+    private metadata: TrackMetadata | Pick<TrackMetadata, 'name' | 'artist'>;
     api: lrc.Client;
 
     constructor() {
@@ -26,21 +26,21 @@ export class Lyrics {
      * @returns {boolean} True if the track is instrumental (i.e., no lyrics found), false otherwise.
      * @throws `NoLyricsAvailable` if no lyrics are found for the specified track and artist.
      */
-    public async checkInstrumental(metadata: TrackMetadata): Promise<boolean> {
+    public async checkInstrumental(metadata: TrackMetadata | Pick<TrackMetadata, 'name' | 'artist'>): Promise<boolean> {
         const result = await this.api.findLyrics({ track_name: metadata.name, artist_name: metadata.artist });
 
         return result.instrumental;
     }
 
-    public async getLyrics(metadata: TrackMetadata, index: boolean = false): Promise<string> {
+    public async getLyrics(metadata: TrackMetadata | Pick<TrackMetadata, 'name' | 'artist'>, index: boolean = false): Promise<string> {
+        this.metadata = metadata;
+        
         const lyrics = (await this.api.findLyrics({
             track_name: metadata.name,
             artist_name: metadata.artist
         })).plainLyrics;
 
-        if (await this.checkInstrumental(metadata)) {
-            return Instrumental.DESC();
-        }
+        if (await this.checkInstrumental(metadata)) return '';
 
         if (!lyrics) {
             throw new NoLyricsAvailable();
@@ -52,16 +52,18 @@ export class Lyrics {
     }
 
     /**
-     * 
+     * Select 4 lines from the given lyrics based on a specified range.
      * @param {string} lyrics The full lyrics of the song as a single string.
      * @param {string} selection The range of lines to extract, specified in the format "start-end" (e.g., '2-5')
-     * @returns {string} A string containing exactly 4 extracted lines, separated by newline characters.
+     * @returns {Promise<string>} A string containing exactly 4 extracted lines, separated by newline characters.
      * @throws `InvalidFormatError` If the selection argument is not in the correct "start-end" format.
      * @throws `InvalidSelectionError` If the specified range is out of bounds or otherwise invalid.
      * @throws `LineLimitExceededError` If the selected range does not include exactly 4 non-empty lines.
      */
-    public selectLines(lyrics: string, selection: `${number}-${number}`): string;
-    public selectLines(lyrics: string, selection: `${number}-${number}`): string | undefined {
+    public async selectLines(lyrics: string, selection: string): Promise<string>;
+    public async selectLines(lyrics: string, selection: string): Promise<string | undefined> {
+        if (await this.checkInstrumental(this.metadata) || !lyrics) return '';
+
         const rawLines = lyrics.split('\n');
         let lines: string[]
 
@@ -96,7 +98,7 @@ export class Lyrics {
                 throw new LineLimitExceededError();
             }
 
-            return selectedLines.join('\n').trim();
+            return selectedLines.join('\n');
         } catch (err) {
             if (err instanceof Error) {
                 throw err;

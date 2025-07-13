@@ -107,7 +107,7 @@ export class Spotify {
                 const trackId = this.extractSpotifyID(query)!.id
                 const track = await this.client.tracks.get(trackId);
 
-                return await this.getTrackMetadata(track!);
+                return this.getTrackMetadata(track!);
             } else {
                 if (limit < 1) throw new InvalidSearchLimit();
                 const search = await this.client.tracks.search(query, { limit });
@@ -140,7 +140,7 @@ export class Spotify {
                 const albumId = this.extractSpotifyID(query)!.id
                 const album = await this.client.albums.get(albumId);
 
-                return await this.getAlbumMetadata(album!, shuffle);
+                return this.getAlbumMetadata(album!, shuffle);
             } else {
                 if (limit < 1) throw new InvalidSearchLimit();
 

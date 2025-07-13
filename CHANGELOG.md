@@ -1,0 +1,65 @@
+## 🎉 v1.1.0 - "Scannable Serenity"
+
+### ✨ Added
+
+* **Multi-threaded image post-processing**:
+  Offloaded color manipulation for Spotify scannables (`replaceWhite`) to a `worker_thread` to improve responsiveness and allow parallel rendering.
+
+* **Palette speed boost**:
+  Introduced image downscaling before color extraction using `node-vibrant`, resulting in palette generation time dropping from \~200ms to \~35ms on average.
+
+* **Custom font registration support**:
+  New utility: `registerCustomFonts(paths, aliases)`
+  Allows users to register fonts dynamically by specifying folder-based aliases. Files must follow `Family-Weight.ttf` naming.
+
+* **Support for poster generation without lyrics**:
+  Lyrics and poster generation functions now gracefully handle instrumental tracks or missing lyrics without throwing.
+
+* **Improved JSdoc and typing** across the image and lyrics modules for better DX and maintainability.
+
+---
+
+### 🛠 Changed
+
+* **`Lyrics.selectLines()` is now async**:
+  Accepts track metadata to automatically detect instrumental songs and return empty results instead of throwing.
+
+* **Major refactor in `image.ts`**:
+
+  * Removed unnecessary `await` keywords (replaced with direct `return ...`)
+  * Optimized palette and resizing workflows
+  * Clearer separation of logic for better debuggability
+
+* **Improved font aliasing system**:
+  `getFontAlias()` now accepts custom alias mappings to improve clarity and extensibility.
+
+* **Better fallback handling**:
+  `NotoSans` is now used as a fallback font behind `Oswald` for extended glyph support (e.g., Latin, rare symbols).
+
+---
+
+### 🐛 Fixed
+
+* 🧱 Fixed a bug where fonts wouldn't display correctly due to inconsistent aliasing.
+* 🖼 Resolved issue where scannables appeared with a black background — now properly transparent with `ensureAlpha()`.
+* 🧪 Poster creation now works even when lyrics are not included (e.g., instrumental tracks or empty input).
+
+---
+
+### 🗑 Removed
+
+* 🚮 Dropped support for the following rarely-used fonts:
+
+  * `NotoSansTC` (Traditional Chinese)
+  * `NotoSansSC` (Simplified Chinese)
+  * `NotoSansBengali` (Bengali script)
+
+These can now be registered manually if needed via the new `registerCustomFonts()` function.
+
+---
+
+### 💭 Dev Notes
+
+* This version touched quite a few internals but didn't break any public APIs.
+* The update is **non-breaking** if you follow normal usage patterns.
+* Still... bumping the **minor version** is recommended due to behavioral changes in lyrics handling and internal threading.

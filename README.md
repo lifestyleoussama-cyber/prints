@@ -98,6 +98,7 @@ await poster.track(search, highLightedLyrics, { palette: true, accent: true });
 * 🎼 Lyric support via LRClib
 * 🌈 Accent colors from cover palette
 * 📦 Buffer or file output
+* 📝 Custom fonts
 
 ---
 
@@ -147,21 +148,36 @@ await poster.track(metadata, selectedLyrics, {
 
 ---
 
-## 🐞 Known Issues
+## 📝 Loading custom fonts
 
-* **Long Lyric Lines May Overflow or Break Layout**
-Extremely long lyric lines may not wrap properly or could overflow the designated area in the poster layout.
-This is especially noticeable when:
+If you want to add support for custom fonts not included by default (e.g., `NotoSansSC` for Simplified Chinese), you can register them dynamically like this:
+```ts
+import { registerCustomFonts } from 'beatprints.js';
 
-    - The poster size is small.
+// Paths to your font files. Each file should be named in the format Family-Weight.ttf
+const fontPaths = [
+  '/path/to/fonts/NotoSansSC/NotoSansSC-Regular.ttf',
+  '/path/to/fonts/NotoSansSC/NotoSansSC-Bold.ttf',
+  '/path/to/fonts/NotoSansSC/NotoSansSC-Light.ttf',
+];
 
-    - A single line contains too many characters without spaces.
+// Provide an alias mapping folder/family name to display name used internally
+const aliases = {
+  'NotoSansSC': 'Noto Sans SC',
+};
 
-    - Using non-Latin scripts with wide glyphs.
+// Register your custom fonts
+registerCustomFonts(fontPaths, aliases);
 
-> Temporary workaround: Consider trimming or splitting long lines manually before rendering, or use highlightedLyrics.slice() with specific ranges.
+// Now you can use "Noto Sans SC" as a font alias in rendering functions
+```
 
-A more robust line-breaking mechanism is planned for future updates.
+> **Important**
+>
+> * "Make sure your font files follow the naming convention `Family-Weight.ttf` exactly."
+> * "Register all weights you intend to use (e.g. Regular, Light, Bold)."
+
+This allows you to seamlessly extend font support without modifying internal code or defaults.
 
 ---
 

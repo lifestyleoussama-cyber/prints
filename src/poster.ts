@@ -5,37 +5,33 @@ import { filename, organizeTracks, zip } from './utils.js';
 import { ThemeNotFoundError } from './errors.js';
 import type { TrackMetadata, AlbumMetadata } from './spotify.js';
 import { Size, Position, ThemesSelector } from './constants.js';
-import sharp from 'sharp';
 import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';
 import { type CanvasRenderingContext2D, createCanvas, Image, loadImage } from '@napi-rs/canvas';
-
-/**
- * A class for generating and saving posters containing track or album information.
- */
 
 const boldFonts = write.fontPaths('Bold');
 const regularFonts = write.fontPaths('Regular');
 const lightFonts = write.fontPaths('Light');
 
+/**
+ * A class for generating and saving posters containing track or album information.
+ */
 export class Poster {
     constructor(private options: { filename?: string; output: OutputMode }) {
         this.options.output = this.options.output || { type: 'buffer' };
     }
 
-    private async _handleOutput(img: sharp.Sharp, name: string): Promise<Buffer> {
-        const buffer = await img.toBuffer();
-
+    private async _handleOutput(img: Buffer, name: string): Promise<Buffer> {
         if (this.options.output.type === 'path') {
             const filePath = join(this.options.output.value, name);
-            await writeFile(filePath, buffer, { flag: 'w+' });
+            await writeFile(filePath, img, { flag: 'w+' });
 
             console.log(`✨ Poster saved to ${filePath}`);
 
-            return buffer;
+            return img;
         }
 
-        return buffer;
+        return img;
     }
 
     /**
@@ -57,19 +53,10 @@ export class Poster {
             Size.HEADING
         );
 
-        const headingHeight = write.textHeight(
-            metadata.name.toUpperCase(),
-            boldFonts,
-            Size.HEADING,
-            Size.HEADING_WIDTH
-        );
-
-        const artistPosY = Position.HEADING[1] + headingHeight + 30;
-        
         // Add artist name
         write.text(
             ctx,
-            [Position.ARTIST[0], artistPosY],
+            Position.ARTIST,
             metadata.artist,
             color,
             regularFonts,
@@ -154,10 +141,10 @@ export class Poster {
             'lt'
         );
 
-        const img = sharp(canvas.toBuffer('image/png'));
+        const img = canvas.toBuffer('image/png');
         const name = this.options.filename ? this.options.filename : filename(metadata.name, metadata.artist);
 
-        return await this._handleOutput(img, name);
+        return this._handleOutput(img, name);
     }
 
     public async album(
@@ -217,15 +204,15 @@ export class Poster {
         }
 
         // Save the generated album poster with a unique filename
-        const img = sharp(canvas.toBuffer('image/png'));
+        const img = canvas.toBuffer('image/png');
         const name = this.options.filename ? this.options.filename : filename(metadata.name, metadata.artist);
 
-        return await this._handleOutput(img, name);
+        return this._handleOutput(img, name);
     }
 
     // wtf
     private async BFT(buffer: Buffer): Promise<Image> {
-        return await loadImage(buffer);
+        return loadImage(buffer);
     }
 }
 

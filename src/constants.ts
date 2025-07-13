@@ -9,9 +9,6 @@ export namespace Size {
     // Heading's Width (Max)
     export const HEADING_WIDTH = 1760;
 
-    // Lyrics' Width (Max)
-    export const LYRICS_WIDTH = 1850;
-
     // Resolution Size
     export const COVER = [2040, 2040] as const;
     export const SCANCODE = [660, 170] as const;
@@ -39,7 +36,7 @@ export namespace Size {
 export namespace Position {
     export const COVER = [120, 120] as const;
     export const HEADING = [120, 2400] as const;
-    export const ARTIST = [120, 2700] as const;
+    export const ARTIST = [120, 2550] as const;
     export const LYRICS = [120, 2790] as const;
     export const TRACKS = [120, 2780] as const;
     export const LABEL = [2160, 3230] as const;
@@ -86,18 +83,4 @@ export namespace FilePath {
 
     export const FONTS = join(ASSETS, 'fonts');
     export const TEMPLATES = join(ASSETS, 'templates');
-}
-
-export namespace Instrumental {
-    const choices = [
-        "woosh- instrumental vibes ahead!",
-        "here's a track with some serious feels!",
-        "the melody speaks for itself!",
-        "all melody, no lyrics!",
-        "it's a wordless masterpiece!"
-    ];
-
-    export const PLACEHOLDER = () => pickRandom(choices);
-
-    export const DESC = () => `(\\_/)\n( •.•) mmm, this is an instrumental track !!!\n/> ${PLACEHOLDER()}` as const;
 }
