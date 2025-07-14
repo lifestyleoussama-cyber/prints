@@ -28,7 +28,7 @@ BeatPrints.js is a visual utility to generate music posters from your favorite t
 * ✍️ Lyric highlights from [LRClib](https://lrclib.net)
 * 📄 Output as file or in-memory buffer
 
-![example](https://imgur.com/aEdGN8T.png)
+![example](https://imgur.com/4pgAAVk.png)
 
 ---
 
@@ -84,7 +84,7 @@ await poster.track(search, highLightedLyrics, { palette: true, accent: true });
 
 <b>The example above will result in this:</b>
 <div>
-    <img src="https://imgur.com/yVVo0CV.png" width="200px" height="305px" />
+    <img src="https://imgur.com/2zKqGWL.png" width="200px" height="305px" />
 </div>
 
 ---
@@ -126,9 +126,9 @@ new Poster({ type: 'buffer' });
         </thead>
         <tbody>
             <tr>
-                <td><img src="https://imgur.com/aGjB9iM.png" width="400px" alt="Birds of a feather by Billie Eilish example" /></td>
-                <td><img src="https://imgur.com/5pts38J.png" width="400px" alt="Petals to thorns by d4vd example" /></td>
-                <td><img src="https://imgur.com/0sxW0Jf.png" width="400px" alt="Here with me by d4vd with custom cover example" /></td>
+                <td><img src="https://imgur.com/zjQVstw.png" width="400px" alt="Birds of a feather by Billie Eilish example" /></td>
+                <td><img src="https://imgur.com/fhIa90z.png" width="400px" alt="Petals to thorns by d4vd example" /></td>
+                <td><img src="https://imgur.com/YWC99MQ.png" width="400px" alt="Here with me by d4vd with custom cover example" /></td>
             </tr>
         </tbody>
     </table>
@@ -199,7 +199,7 @@ More: [LICENSE](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 * Original concept & inspiration: [TrueMyst](https://github.com/TrueMyst)
 * Fonts, layout, ideas based on the [Python version](https://github.com/TrueMyst/BeatPrints)
-* Color palette extraction: [node-vibrant](https://github.com/Vibrant-Colors/node-vibrant)
+* Color palette extraction: [sharp-vibrant](https://github.com/LiveChart/sharp-vibrant)
 * Lyrics: [LRClib](https://lrclib.net)
 
 <p align="center">
