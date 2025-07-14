@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import axios from 'axios';
 import sharp from 'sharp';
-import { Vibrant } from 'node-vibrant/node';
+import Vibrant from 'sharp-vibrant';
 import { Size, Position, ThemesSelector, FilePath } from './constants.js';
 import type { RGB } from './write.js';
 import { pickRandom } from './utils.js';
@@ -14,20 +14,16 @@ import { fileURLToPath } from 'node:url';
 const paletteCache = new Map<string, RGB[]>();
 
 export async function getPalette(image: Buffer): Promise<RGB[]> {
-    const downSized = await sharp(image)
-        .resize(32, 32, { fit: 'inside', kernel: 'lanczos3' })
-        .toBuffer();
-
     const hash = createHash('sha1').update(image).digest('hex');
     if (paletteCache.has(hash)) return paletteCache.get(hash)!;
 
-    const palette = await Vibrant.from(downSized)
+    const palette = await Vibrant.from(image)
         .maxColorCount(6)
         .getPalette();
 
-    const colors = Object.values(palette)
+    const colors = Object.values(palette.palette)
         .filter(swatch => swatch !== null)
-        .map(swatch => swatch.rgb.map(c => Math.round(c)) as RGB);
+        .map(swatch => swatch?.rgb.map(c => Math.round(c)) as RGB)
 
     paletteCache.set(hash, colors);
     return colors;
@@ -44,8 +40,7 @@ export async function drawPalette(
     image: Buffer,
     accent: boolean = false
 ): Promise<void> {
-    const thumb = await sharp(image).resize(32, 32, { fit: 'inside' }).toBuffer();
-    const palette = await getPalette(thumb);
+    const palette = await getPalette(image);
 
     for (let i = 0; i < palette.length; i++) {
         const [r, g, b] = palette[i]!;

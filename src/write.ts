@@ -258,7 +258,7 @@ export function textWidth(
 }
 
 /**
- * Renders text on an image at a specified position with customizable font, size, color, alignment, and spacing.
+ * Renders text on an image at a specified position with customizable font, size, color, alignment, spacing and anchor.
  * @param {CanvasRenderingContext2D} ctx The canvas context.
  * @param pos The position of the text.
  * @param text The text to render.

@@ -14,11 +14,11 @@ export namespace Size {
     export const SCANCODE = [660, 170] as const;
 
     // Track/Album Metadata
-    export const TRACKS = 70;
+    export const TRACKS = 80;
     export const HEADING = 160;
     export const ARTIST = 110;
     export const DURATION = 90;
-    export const LYRICS = 84;
+    export const LYRICS = 87;
     export const LABEL = 60;
 
     // Album's Tracklist
@@ -36,9 +36,9 @@ export namespace Size {
 export namespace Position {
     export const COVER = [120, 120] as const;
     export const HEADING = [120, 2400] as const;
-    export const ARTIST = [120, 2550] as const;
-    export const LYRICS = [120, 2790] as const;
-    export const TRACKS = [120, 2780] as const;
+    export const ARTIST = [120, 2575] as const;
+    export const LYRICS = [120, 2750] as const;
+    export const TRACKS = [120, 2750] as const;
     export const LABEL = [2160, 3230] as const;
     export const DURATION = [2160, 2550] as const;
     export const PALETTE = [120, 2240] as const;

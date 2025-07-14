@@ -1,3 +1,29 @@
+## 🔧 v1.1.1 - *2025-07-13*
+
+### 🛠 Changed
+
+* **sharp-vibrant**:
+  Replaced `node-vibrant` with `sharp-vibrant` for improved performance and native image pipeline compatibility.
+
+* **Tweaked constants for text positioning and sizing**:
+  * Adjusted alignment for album tracks and lyrics text.
+  * Increased default lyric font size for better visual balance.
+
+---
+
+### 🧠 Improved
+
+* **Enhanced Spotify client regex matching**:
+  Added support for internationalized (intl) Spotify URLs like `spotify.com/intl-es/track/...`
+
+---
+
+### 📚 Updated
+
+* Updated usage examples to reflect the latest changes in API and layout, ensuring consistency and clarity for new users.
+
+---
+
 ## 🎉 v1.1.0 - "Scannable Serenity"
 
 ### ✨ Added
@@ -55,11 +81,3 @@
   * `NotoSansBengali` (Bengali script)
 
 These can now be registered manually if needed via the new `registerCustomFonts()` function.
-
----
-
-### 💭 Dev Notes
-
-* This version touched quite a few internals but didn't break any public APIs.
-* The update is **non-breaking** if you follow normal usage patterns.
-* Still... bumping the **minor version** is recommended due to behavioral changes in lyrics handling and internal threading.

@@ -2,7 +2,7 @@ import { Client, Track, Album } from 'spotify-api.js';
 import { InvalidSearchLimit, NoMatchingAlbumFound, NoMathcingTrackFound } from './errors.js';
 
 export const SpotifyURI = /^spotify:(track|album):([0-9A-Za-z]{22})$/;
-export const SpotifyURL = /^https:\/\/(open|play)\.spotify\.com\/(track|album)\/([0-9A-Za-z]{22})$/
+export const SpotifyURL = /^https:\/\/(open|play)\.spotify\.com(\/intl-\w{2})?\/(track|album)\/([0-9A-Za-z]{22})$/
 export const SpotifyID = /^([0-9A-Za-z]{22})$/;
 
 /**
@@ -45,16 +45,16 @@ export class Spotify {
         const cleanId = id.split('?')[0]!;
 
         // Spotify URI: spotify:album:id or spotify:track:id
-        if (/spotify:(track|album):[0-9A-Za-z]{22}/.test(cleanId)) {
+        if (SpotifyURI.test(cleanId)) {
             return true;
         }
 
-        if (/https:\/\/open\.spotify\.com\/(track|album)\/([0-9A-Za-z]{22})/.test(cleanId)) {
+        if (SpotifyURL.test(cleanId)) {
             return true;
         }
 
         // Spotify ID: 22-character Base62 string
-        if (/^[0-9A-Za-z]{22}$/.test(cleanId)) {
+        if (SpotifyID.test(cleanId)) {
             return true;
         }
 
@@ -74,11 +74,11 @@ export class Spotify {
         // URL (https://open.spotify.com/track/... or https://play.spotify.com/track/...)
         const urlMatch = cleanInput.match(SpotifyURL);
         if (urlMatch) {
-            return { type: urlMatch[2] as SpotifySearchType, id: urlMatch[3]! };
+            return { type: urlMatch[3] as SpotifySearchType, id: urlMatch[4]! };
         }
 
         // ID (22-char base62)
-        const rawIdMatch = cleanInput.match(/^([0-9A-Za-z]{22})$/);
+        const rawIdMatch = cleanInput.match(SpotifyID);
         if (rawIdMatch) {
             return { type: null, id: rawIdMatch[1]! };
         }
