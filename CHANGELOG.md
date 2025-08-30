@@ -1,3 +1,11 @@
+## 💔 v1.2.1 - "Foolishness" - *2025-08-30*
+
+### 🛠 Changes
+
+* Forgot to build the project. 🥀💔
+
+---
+
 ## 🖼 v1.2.0 - "Formats in Focus" - *2025-08-30*
 
 ### ✨ Added
@@ -13,7 +21,6 @@
 ---
 
 ### 🛠 Changed
-
 
 * **Poster options refined**:  
   * `output` type was updated for better clarity:  
