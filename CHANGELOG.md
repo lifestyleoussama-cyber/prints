@@ -1,3 +1,35 @@
+## 🖼 v1.2.0 - "Formats in Focus" - *2025-08-30*
+
+### ✨ Added
+
+* **Configurable output mime type**:
+  Poster generation now supports choosing the output format via `options.mimeType`.
+  Available options:
+  * `image/png`
+  * `image/jpeg`
+  * `image/webp`
+  * `image/avif`
+
+---
+
+### 🛠 Changed
+
+
+* **Poster options refined**:  
+  * `output` type was updated for better clarity:  
+    - **Before:** `{ type: 'buffer' } | { type: 'path'; value: string }`  
+    - **Now:** `{ type: 'buffer' } | { type: 'file'; path: string }`
+  
+  * Poster now takes a `PosterOptions` object instead of `{ filename?: string; output: OutputMode }`.
+
+* **Default Spotify search limit increased**:
+  Album/track search now defaults to **8 results** instead of 6.
+
+* **Font size adjustments for better readability and balance**:
+  * Lyrics: **95** (was 87)
+  * Album tracks: **83** (was 80)
+---
+
 ## 🔧 v1.1.1 - *2025-07-13*
 
 ### 🛠 Changed

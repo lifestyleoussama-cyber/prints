@@ -197,7 +197,7 @@ More: [LICENSE](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ## 💜 Credits & Thanks
 
-* Original concept & inspiration: [TrueMyst](https://github.com/TrueMyst)
+* Original concept & inspiration: [TrueMyst](https://github.com/TrueMyst/BeatPrints)
 * Fonts, layout, ideas based on the [Python version](https://github.com/TrueMyst/BeatPrints)
 * Color palette extraction: [sharp-vibrant](https://github.com/LiveChart/sharp-vibrant)
 * Lyrics: [LRClib](https://lrclib.net)
