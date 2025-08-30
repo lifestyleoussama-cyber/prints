@@ -14,11 +14,11 @@ export namespace Size {
     export const SCANCODE = [660, 170] as const;
 
     // Track/Album Metadata
-    export const TRACKS = 80;
+    export const TRACKS = 83;
     export const HEADING = 160;
     export const ARTIST = 110;
     export const DURATION = 90;
-    export const LYRICS = 87;
+    export const LYRICS = 95;
     export const LABEL = 60;
 
     // Album's Tracklist

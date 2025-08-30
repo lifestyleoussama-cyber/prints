@@ -101,7 +101,7 @@ export class Spotify {
      */
     async getTrack(query: string, limit: 1): Promise<TrackMetadata>;
     async getTrack(query: string, limit?: number): Promise<TrackMetadata[]>;
-    async getTrack(query: string, limit: number = 6): Promise<TrackMetadata[] | TrackMetadata> {
+    async getTrack(query: string, limit: number = 8): Promise<TrackMetadata[] | TrackMetadata> {
         try {
             if (this.isSpotifyID(query)) {
                 const trackId = this.extractSpotifyID(query)!.id
@@ -134,7 +134,7 @@ export class Spotify {
      */
      async getAlbum(query: string, limit: 1): Promise<AlbumMetadata>;
      async getAlbum(query: string, limit?: number): Promise<AlbumMetadata[]>;
-     async getAlbum(query: string, limit: number = 6, shuffle: boolean = false): Promise<AlbumMetadata[] | AlbumMetadata> {
+     async getAlbum(query: string, limit: number = 8, shuffle: boolean = false): Promise<AlbumMetadata[] | AlbumMetadata> {
         try {
             if (this.isSpotifyID(query)) {
                 const albumId = this.extractSpotifyID(query)!.id

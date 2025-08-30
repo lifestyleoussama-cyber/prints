@@ -7,7 +7,7 @@ import type { TrackMetadata, AlbumMetadata } from './spotify.js';
 import { Size, Position, ThemesSelector } from './constants.js';
 import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';
-import { type CanvasRenderingContext2D, createCanvas, Image, loadImage } from '@napi-rs/canvas';
+import { Canvas, type CanvasRenderingContext2D, createCanvas, Image, loadImage } from '@napi-rs/canvas';
 
 const boldFonts = write.fontPaths('Bold');
 const regularFonts = write.fontPaths('Regular');
@@ -17,13 +17,18 @@ const lightFonts = write.fontPaths('Light');
  * A class for generating and saving posters containing track or album information.
  */
 export class Poster {
-    constructor(private options: { filename?: string; output: OutputMode }) {
-        this.options.output = this.options.output || { type: 'buffer' };
+    constructor(private options?: PosterOptions) {
+        this.options = this.options || {
+            mimeType: 'image/png',
+            output: {
+                type: 'buffer'
+            }
+        }
     }
 
     private async _handleOutput(img: Buffer, name: string): Promise<Buffer> {
-        if (this.options.output.type === 'path') {
-            const filePath = join(this.options.output.value, name);
+        if (this.options?.output?.type === 'file') {
+            const filePath = join(this.options.output.path ?? process.cwd(), name);
             await writeFile(filePath, img, { flag: 'w+' });
 
             console.log(`✨ Poster saved to ${filePath}`);
@@ -141,10 +146,7 @@ export class Poster {
             'lt'
         );
 
-        const img = canvas.toBuffer('image/png');
-        const name = this.options.filename ? this.options.filename : filename(metadata.name, metadata.artist);
-
-        return this._handleOutput(img, name);
+        return this.save(canvas, metadata)
     }
 
     public async album(
@@ -203,11 +205,26 @@ export class Poster {
             x += columnWidth + Size.SPACING // Adjust x for next column
         }
 
-        // Save the generated album poster with a unique filename
-        const img = canvas.toBuffer('image/png');
-        const name = this.options.filename ? this.options.filename : filename(metadata.name, metadata.artist);
+        return this.save(canvas, metadata);
+    }
 
-        return this._handleOutput(img, name);
+    private async save(canvas: Canvas, metadata: TrackMetadata | AlbumMetadata): Promise<Buffer> {
+        let img: Buffer | null = null;
+        switch (this.options?.mimeType) {
+            case 'image/png': 
+                img = canvas.toBuffer('image/png')
+                break;
+            case 'image/avif':
+                img = canvas.toBuffer('image/avif', { quality: 100 })
+                break;
+            case 'image/jpeg':
+            case 'image/webp':
+                img = canvas.toBuffer(this.options.mimeType, 100);
+                break;
+        }
+
+        const name = this.options?.filename ? this.options.filename : filename(metadata.name, metadata.artist);
+        return this._handleOutput(img!, name);
     }
 
     // wtf
@@ -216,7 +233,7 @@ export class Poster {
     }
 }
 
-export type OutputMode = { type: 'buffer' } | { type: 'path'; value: string };
+export type OutputMode = { type: 'buffer' } | { type: 'file'; path: string };
 export type PosterTrackOptions = {
     accent?: boolean;
     palette?: boolean;
@@ -230,4 +247,10 @@ export type PosterAlbumOptions = {
     palette?: boolean;
     theme?: ThemesSelector.Options;
     pcover?: Buffer | string;
+}
+
+export type PosterOptions = {
+    filename?: string;
+    mimeType?: 'image/png' | 'image/jpeg' | 'image/avif' | 'image/webp';
+    output?: OutputMode;
 }
