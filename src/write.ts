@@ -1,5 +1,4 @@
 import { type Font, loadSync } from 'opentype.js';
-import { FilePath } from './constants.js';
 import { type CanvasRenderingContext2D, GlobalFonts, createCanvas } from '@napi-rs/canvas';
 import { basename, dirname, join } from 'node:path';
 
@@ -76,8 +75,8 @@ export function fontPaths(weight: FontWeight): string[] {
         "NotoSansJP",
         "NotoSansKR",
         "NotoSans",
-    ].map(family => 
-        join(FilePath.FONTS, family, `${family}-${weight}.ttf`)
+    ].map(family =>
+        new URL(`./assets/templates/${family}/${family}-${weight}.ttf`, import.meta.url).pathname
     );
 
     return [...defaultFonts, ...shared.filter(p => p.includes(`-${weight}.ttf`))];

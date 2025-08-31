@@ -1,3 +1,15 @@
+## 🗃 v1.2.2 - "Remote Resources" - *2025-08-30*
+
+### 🛠 Changed
+
+* **Template fetching updated**:  
+  Templates now prioritize fetching from **URL** instead of the local filesystem (`fs`).
+
+* **Font loading updated**:  
+  Fonts now follow the same URL-first approach as templates, improving flexibility and consistency.
+
+---
+
 ## 💔 v1.2.1 - "Foolishness" - *2025-08-30*
 
 ### 🛠 Changes

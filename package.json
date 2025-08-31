@@ -1,6 +1,6 @@
 {
   "name": "beatprints.js",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A Node.js version of the original Python BeatPrints project (https://github.com/TrueMyst/BeatPrints/) by TrueMyst. Create eye-catching, Pinterest-style music posters effortlessly. BeatPrints integrates with Spotify and LRClib API to help you design custom posters for your favorite tracks or albums. 🍀",
   "files": [
     "lib/**"

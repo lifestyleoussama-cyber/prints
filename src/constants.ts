@@ -75,11 +75,3 @@ export namespace ThemesSelector {
 
     export type Options = keyof typeof THEMES;
 }
-
-export namespace FilePath {
-    export const FULLPATH = __dirname;
-    export const ASSETS = join(FULLPATH, 'assets');
-
-    export const FONTS = join(ASSETS, 'fonts');
-    export const TEMPLATES = join(ASSETS, 'templates');
-}

@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import axios from 'axios';
 import sharp from 'sharp';
 import Vibrant from 'sharp-vibrant';
-import { Size, Position, ThemesSelector, FilePath } from './constants.js';
+import { Size, Position, ThemesSelector } from './constants.js';
 import type { RGB } from './write.js';
 import { pickRandom } from './utils.js';
 import type { CanvasRenderingContext2D } from '@napi-rs/canvas';
@@ -166,9 +166,9 @@ export async function cover(url: string, source?: string | Buffer): Promise<Buff
  */
 export function getTheme(theme: ThemesSelector.Options = 'Light'): [RGB, string] {
     const variant = ThemesSelector.THEMES[theme];
-    const template = join(FilePath.TEMPLATES, `${theme.toLowerCase()}.png`);
+    const templateUrl = new URL(`./assets/templates/${theme.toLowerCase()}.png`, import.meta.url).pathname;
 
-    return [variant as unknown as RGB, template];
+    return [variant as unknown as RGB, templateUrl];
 }
 
 async function replaceWhite(raw: Buffer, variant: number[]): Promise<Buffer> {
